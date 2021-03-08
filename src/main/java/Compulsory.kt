@@ -101,7 +101,7 @@ class Compulsory {
 
         tp.displayTravelPlan()
 
-        println(shortestPath(city, v1, v6))
+        //println(shortestPath(city, v1, v6))
     }
 
     private fun shortestPath(city: City, initialLocation: Location, targetLocation: Location): Int {
