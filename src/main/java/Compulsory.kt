@@ -1,4 +1,5 @@
 import interfaces.Location
+import interfaces.Visitable
 import locations.*
 import utils.DistanceAndID
 import utils.HotelRanks
@@ -112,12 +113,50 @@ class Compulsory {
          * This is the initial step of the algorithm
          */
 
-        var pathsToTarget = city.cityLocations.filter { locationIterator ->
+        /**
+         * The idea of the algorithm is to go from the final location backwards until we reach an end point (or when we detect a LOOP)
+         * We add the distance values as we go and check if the location we reached now is the initialLocation
+         */
+
+        /*var pathsToTarget = city.cityLocations.filter { locationIterator ->
             locationIterator.map.any {
                 it.locationID == targetLocation.id
             }
+        }*/
+
+        var pathsAndCosts = mutableListOf<Pair<String, Int>>()
+        var shortestPath = 999999
+
+        city.cityLocations.forEach { location ->
+            location.map.forEach { distanceAndID ->
+                if(distanceAndID.locationID == targetLocation.id) {
+                    pathsAndCosts.add(Pair(distanceAndID.locationID, distanceAndID.distance))
+                    if(distanceAndID.locationID == initialLocation.id &&
+                        shortestPath > distanceAndID.distance) {
+                        shortestPath = distanceAndID.distance
+                    }
+                }
+            }
         }
 
-        return 0
+        var newPathsAndCosts = pathsAndCosts
+
+        while(newPathsAndCosts.size > 0) {
+            city.cityLocations.forEach { location ->
+                location.map.forEach { distanceAndID ->
+                    pathsAndCosts.forEach { currentTargetLocations ->
+                        if(distanceAndID.locationID == currentTargetLocations.first) {
+                            newPathsAndCosts.add(Pair(distanceAndID.locationID, distanceAndID.distance + currentTargetLocations.second))
+                            if(distanceAndID.locationID == initialLocation.id &&
+                                shortestPath > distanceAndID.distance) {
+                                shortestPath = distanceAndID.distance
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return shortestPath
     }
 }
